@@ -3,6 +3,7 @@ from app.models.user import LoginPayload
 from pydantic import ValidationError
 from app import db
 from bson import ObjectId
+from app.models.products import *
 
 
 main_bp = Blueprint('main_bp', __name__)
@@ -31,10 +32,7 @@ def login():
 @main_bp.route('/products', methods=['GET'])
 def get_products():
     products_cursor = db.products.find({})
-    products_list = []
-    for products in products_cursor:
-        products['_id'] = str(products['_id'])
-
+    products_list = [ProductDBModel(**product).model_dump(by_alias=True, exclude_defaults=True) for product in products_cursor]
     return jsonify({products_list})
 
 
@@ -55,8 +53,8 @@ def get_product_by_id(product_id):
     product = db.products.find_one({"_id": oid})
 
     if product:
-        product['_id'] = str(product['_id'])
-        return jsonify(product)
+        product_model = ProductDBModel(**product).model_dump(by_alias=True, exclude_none=True)
+        return jsonify(product_model)
     else:
         return jsonify({"error": f"Produto com o id: {product_id} - Não encontrado"})
 
