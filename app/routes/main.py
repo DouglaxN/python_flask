@@ -1,9 +1,10 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 from app.models.user import LoginPayload
 from pydantic import ValidationError
 from app import db
 from bson import ObjectId
 from app.models.products import *
+
 
 
 main_bp = Blueprint('main_bp', __name__)
